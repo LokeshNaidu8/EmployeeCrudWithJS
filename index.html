@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300&display=swap');
+
+        :root {
+            --roboto: 'Roboto Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .container {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            background-color: whitesmoke;
+        }
+
+        .container .left {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 50%;
+            justify-content: center;
+
+        }
+
+        .container .right {
+            height: 100%;
+            width: 50%;
+            display: flex;
+            align-items: center;
+            font-family: var(--roboto);
+            flex-direction: column;
+        }
+
+        .container .right p.header {
+            font-size: 40px;
+            padding: 30px 0px;
+            text-align: center;
+            border-bottom: 1px solid black;
+        }
+
+        input {
+            padding: 10px;
+            border: none;
+            width: 200px;
+            outline: none;
+        }
+
+        .container .right .results {
+            width: auto;
+            height: auto;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            margin-top: 40px;
+        }
+
+        .container .left button {
+            border: none;
+            height: 25%;
+            width: 100%;
+            font-size: 17px;
+            font-family: var(--roboto);
+            color: white;
+            background-color: black;
+            transition: 500ms ease-out;
+            position: relative;
+            z-index: 1;
+        }
+
+        .container .left button:hover {
+            color: black;
+
+        }
+
+        .container .left button:hover::before {
+            transform: scaleX(1);
+
+        }
+
+        .container .left button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background-color: whitesmoke;
+            transition: 500ms ease-in;
+            z-index: -1;
+            transform: scaleX(0);
+            transform-origin: right;
+        }
+
+
+
+        div.header {
+            font-size: 20px;
+            padding: 30px;
+            color: gray
+        }
+
+        .results .btn {
+            height: 50px;
+            width: 40%;
+            color: white;
+            background-color: black;
+            border: none;
+            transition: 500ms ease-in-out;
+        }
+
+        .results .btn:hover {
+            box-shadow: inset 700px 0 0 0 red;
+        }
+
+        .hider {
+            display: none;
+        }
+
+        table,
+        tr,
+        th,
+        td {
+            border-bottom: 1px solid black;
+            border-collapse: collapse;
+            align-items: center;
+            padding: 8px 30px;
+        }
+
+        th {
+            color: white;
+            background-color: black;
+        }
+
+        .msg {
+            margin-top: 10%;
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="left">
+            <button id='allEmp' class="btn">All Employees</button>
+            <button id='newEmp' class="btn">Create New Employee</button>
+            <button id='updateEmp' class="btn">Update Employee</button>
+            <button id='deleteEmp' class="btn">Delete Employee</button>
+        </div>
+        <div class="right">
+
+            <p class="header">Results shown here</p>
+
+            <div class="results">
+
+                <!-- Adding New Employee -->
+                <div class="newEmployee hider hider hider">
+                    <div class="header">Adding New Employee</div>
+                    <input type="number" name="id" id="nid" placeholder="ID">
+                    <input type="text" name="name" id="nname" placeholder="Username">
+                    <input type="number" name="salary" id="nsalary" placeholder="Salary">
+                    <br><br><br>
+                    <button id="addingEmployeebtn" class='btn'>Create New Employee</button>
+
+                    <div class="msg"></div>
+                </div>
+
+                <!-- View Employees -->
+                <div class="viewAllEmployees hider">
+                    <div class="header">View All Employee</div>
+                    <table id='viewEmployeeTable'>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Salary</th>
+                        </tr>
+                        <tbody id='tbody'></tbody>
+                    </table>
+                </div>
+
+                <!-- Delete Employee -->
+                <div class="deleteEmployee hider">
+                    <div class="header">Delete Employee</div>
+                    <span>Enter ID to delete Employee : </span>
+                    <input type="number" placeholder="Enter ID " id='delID'><br><br><br>
+                    <button id="deletingEmployeeBtn" class="btn">Delete</button><br><br><br>
+                    <div class="msg1" style="color:red"></div>
+                </div>
+
+                <!-- Updating Employee -->
+                <div class="updateEmployee hider">
+                    <div class="header">Updating Employee</div>
+                    <span>Enter ID to Update Employee : </span>
+                    <input type="number" placeholder="Enter ID " id='upID'><br><br><br>
+                    <button class="btn" id="checkEmp">Checking Employee</button><br><br>
+                    <!-- After search found -->
+                    <div class="updater hider">
+                        <span>Name : </span>
+                        <input type="text" id='nameupdater'><br><br>
+                        <span>Salary : </span>
+                        <input type="text" id='salaryupdater'><br><br><br>
+                        <button class="btn" id="updatingEmployeeBtn">Update Employee</button>
+                    </div><br>
+                    <div class="msg2" style="color:red"></div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        //Left Buttons
+        var allEmpBtn = document.getElementById('allEmp')
+        var createEmpBtn = document.getElementById('newEmp')
+        var updateEmpBtn = document.getElementById('updateEmp')
+        var deleteEmpBtn = document.getElementById('deleteEmp')
+
+        //All Container
+        var newEmployeeContainer = document.querySelector('.newEmployee')
+        var viewEmployeeContainer = document.querySelector('.viewAllEmployees')
+        var updateEmployeeContainer = document.querySelector('.updateEmployee')
+        var deleteEmployeeContainer = document.querySelector('.deleteEmployee')
+
+        //Toggle hider
+        function toggleHider(container) {
+            switch (container) {
+                case 'newEmployeeContainer':
+                    newEmployeeContainer.classList.remove('hider')
+                    viewEmployeeContainer.classList.add('hider')
+                    updateEmployeeContainer.classList.add('hider')
+                    deleteEmployeeContainer.classList.add('hider')
+                    break;
+                case 'viewEmployeeContainer':
+                    newEmployeeContainer.classList.add('hider')
+                    viewEmployeeContainer.classList.remove('hider')
+                    updateEmployeeContainer.classList.add('hider')
+                    deleteEmployeeContainer.classList.add('hider')
+                    break;
+                case 'updateEmployeeContainer':
+                    newEmployeeContainer.classList.add('hider')
+                    viewEmployeeContainer.classList.add('hider')
+                    updateEmployeeContainer.classList.remove('hider')
+                    deleteEmployeeContainer.classList.add('hider')
+                    break;
+                case 'deleteEmployeeContainer':
+                    newEmployeeContainer.classList.add('hider')
+                    viewEmployeeContainer.classList.add('hider')
+                    updateEmployeeContainer.classList.add('hider')
+                    deleteEmployeeContainer.classList.remove('hider')
+                    break;
+            }
+        }
+
+
+        //data
+        var data = [{ "id": 1, "name": "lokesh", "salary": 20000 },
+        { "id": 2, "name": "thinesh", "salary": 20000 },
+        { "id": 3, "name": "stephen", "salary": 30000 }
+        ]
+
+
+        //Function data fetcher from employee data
+        function viewEmpCaller() {
+            var spr = ""
+            for (let j = 0; j < data.length; j++) {
+                spr += ` <tr> <td> ${data[j].id} </td> <td> ${data[j].name} </td> <td> ${data[j].salary} </td> </tr> `
+            }
+            tbody.innerHTML = spr
+        }
+        //msg
+        var msg = document.querySelector('.msg')
+
+        function clearMsg() {
+            msg.innerHTML = ''
+        }
+        clearMsg()
+
+        /*<div class="newEmployee hider">
+            <div class="header">Adding New Employee</div>
+            <input type="number" name="id" id="nid" placeholder="ID">
+            <input type="text" name="name" id="nname" placeholder="Username">
+            <input type="number" name="salary" id="nsalary" placeholder="Salary">
+            <br><br><br>
+            <button id="addingEmployeebtn" class='btn'>Create New Employee</button>
+
+            <div class="msg"></div>
+        
+        </div>*/
+
+        //Creating new Employee
+
+        var nid = document.getElementById('nid')
+        var nname = document.getElementById('nname')
+        var nsalary = document.getElementById('nsalary')
+        var addingEmployeebtn = document.getElementById('addingEmployeebtn')
+
+        createEmpBtn.addEventListener('click', () => {
+            toggleHider('newEmployeeContainer')
+        })
+        addingEmployeebtn.addEventListener('click', () => {
+            var id = parseInt(nid.value)
+            var name = nname.value
+            var salary = parseInt(nsalary.value)
+            if (id == NaN || name == "" || salary == NaN) {
+                msg.innerHTML = 'Inputs are missing'
+            } else {
+                data.push({ id: id, name: name, salary: salary })
+                msg.innerHTML = ` ${name} is successfully added `;
+
+            }
+
+        })
+
+        //View Employee
+        var employeeTable = document.getElementById('viewEmployeeTable')
+        var tbody = document.getElementById('tbody')
+        allEmpBtn.addEventListener('click', function () {
+            toggleHider('viewEmployeeContainer')
+            viewEmpCaller()
+        })
+
+
+        //Update Employee
+
+        /*<!-- Updating Employee -->
+        <div class="updateEmployee hider">
+            <div class="header">Updating Employee</div>
+            <span>Enter ID to Update Employee : </span>
+            <input type="number" placeholder="Enter ID " id='upID'><br><br><br>
+            <button class="btn" id="checkEmp">Checking Employee</button>
+
+            <!-- After search found -->
+            <div class="updater hider">
+                <span>Name : </span>
+                <input type="text" id='nameupdater'><br><br>
+                <span>Salary : </span>
+                <input type="text" id='salaryupdater'><br><br><br>
+                <button class="btn" id="updatingEmployeeBtn">Update Employee</button>
+            </div>
+            <div class="msg"></div>
+        </div>*/
+
+        //Check id
+        function checkID(eid) {
+
+            for (let i = 0; i < data.length; i++) {
+                if (data[i].id == eid) {
+                    var v = [true, i]
+              
+                    return v
+
+                }
+
+            }
+
+        }
+
+        var updateId = document.getElementById('upID');
+        var checkEmployeeBtn = document.getElementById('checkEmp')
+        var nameupdater = document.getElementById('nameupdater')
+        var salaryupdater = document.getElementById('salaryupdater')
+        var updatingEmployeeBtn = document.getElementById('updatingEmployeeBtn')
+        var updater = document.querySelector('.updater')
+
+        var msg2 = document.querySelector('.msg2')
+
+        updateEmpBtn.addEventListener('click', function () {
+            toggleHider('updateEmployeeContainer')
+        })
+
+        checkEmployeeBtn.addEventListener('click', () => {
+            let id = parseInt(updateId.value)
+            var checking = checkID(id)
+           
+            if (checking != undefined) {
+                if (checking[0] == true) {
+                    msg2.innerHTML = 'You got the id'
+                    updater.classList.remove('hider')
+                    var ind = checking[1]
+           
+                    updatingEmployeeBtn.addEventListener('click', () => {
+
+                        let name = nameupdater.value;
+                        let salary = salaryupdater.value;
+                        data[ind].name=name;
+                        data[ind].salary=salary
+                        msg2.innerHTML = 'Employee updated'
+                        if (msg2.innerHTML == 'Employee updated') {
+                            updater.classList.add('hider')
+                            updateId.value = ""
+                            ind=undefined
+                            
+                        }
+                    })
+
+                }
+            }
+            else {
+                msg2.innerHTML = 'Sorry there is no data with this id'
+                updater.classList.add('hider')
+
+
+            }
+        })
+
+
+        //Delete Employee
+        /*<!-- Delete Employee -->
+                <div class="deleteEmployee hider">
+                    <div class="header">Delete Employee</div>
+                    <span>Enter ID to delete Employee : </span>
+                    <input type="number" placeholder="Enter ID " id='delID'><br><br><br>
+                    <button id="deletingEmployeeBtn" class="btn">Delete</button>
+                    <div class="msg"></div>
+                </div>*/
+
+        var dID = document.getElementById('delID')
+        var deletingEmployeeBtn = document.getElementById('deletingEmployeeBtn')
+        var msg1 = document.querySelector('.msg1')
+        deleteEmpBtn.addEventListener('click', () => {
+            toggleHider('deleteEmployeeContainer')
+        })
+        deletingEmployeeBtn.addEventListener('click',()=>{
+            var did=parseInt(dID.value)
+            let newid=checkID(did)
+            if(newid!=undefined){
+                if(newid[0]==true){
+                    let myindex=newid[1]
+                    msg1.innerHTML=` Employee <b> ${data[myindex].name}</b> is removed`
+                    data.splice(myindex,1)
+                }
+            }
+            else{
+                msg1.innerHTML='ID not found'
+            }
+            
+        })
+
+    </script>
+
+</body>
+
+</html>
